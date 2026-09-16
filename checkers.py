@@ -51,11 +51,16 @@ class CheckersBoard(_CB,Node):
     def reward(board):
         if board.terminal:
             if board.winner:
-                return -12
+                return -1
             else:
-                return 12
+                return 1
         else:
-            return (12-board.tup.count(True))-(12-board.tup.count(True))
+            if board.tup.count(True)>board.tup.count(False):
+                return -1
+            elif board.tup.count(True)<board.tup.count(False):
+                return 1
+            else:
+                return 0
 
     def is_terminal(board):
         return board.terminal
@@ -86,12 +91,12 @@ class CheckersBoard(_CB,Node):
             kings.remove(move[3])
         for i,val in enumerate(board.tup[:8]):
             if val==True and i not in kings:
-                print('found a star king')
+                #print('found a star king')
                 kings.append(i)
         round=board.round+1
         for i,val in enumerate(board.tup[56:]):
             if val==False and i+56 not in kings:
-                print('found a moon king')
+                #print('found a moon king')
                 kings.append(i+56)
         kings=tuple(kings)
         return CheckersBoard(tup,prev,turn,move,winner,is_terminal,advant,kings,round)
@@ -127,7 +132,7 @@ class empty_square:
                 return (True,move)
         return (False,)
 def load_board(board,screen,moon,star,star_king,moon_king,imp):
-    print('kings',board.kings)
+    #print('kings',board.kings)
     positionss=positions()
     clean=Color(0,0,0,0)
     screen.fill(clean)
@@ -157,11 +162,11 @@ def play_game():
     tree=MCTS()
     board=new_checkers_board()
     screen=pygame.display.set_mode((800,800))
-    imp=pygame.image.load('assets\Checkerboard_.png').convert_alpha()
-    moon=pygame.image.load('assets\Moon_Basic.png').convert_alpha()
-    star=pygame.image.load('assets\star.png').convert_alpha()
-    star_king=pygame.image.load('assets\star-king.jpg').convert_alpha()
-    moon_king=pygame.image.load('assets\moon-king.jpg').convert_alpha()
+    imp=pygame.image.load('assets/Checkerboard_.png').convert_alpha()
+    moon=pygame.image.load('assets/Moon_Basic.png').convert_alpha()
+    star=pygame.image.load('assets/star.png').convert_alpha()
+    star_king=pygame.image.load('assets/star-king.jpg').convert_alpha()
+    moon_king=pygame.image.load('assets/moon-king.jpg').convert_alpha()
     clickables=load_board(board,screen,moon,star,star_king,moon_king,imp)
     my_pieces=clickables[0]
     empty_squares=clickables[1]
@@ -192,7 +197,7 @@ def play_game():
                 print('moons won :(')
             break
         for _ in range(60):
-            print(_)
+            #print(_)
             tree.do_rollout(board)
         board=tree.choose(board)
         clickables=load_board(board,screen,moon,star,star_king,moon_king,imp)
