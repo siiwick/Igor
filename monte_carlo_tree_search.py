@@ -42,7 +42,7 @@ class MCTS:
         self.children[node]=node.find_children()
     def _simulate(self,node):
         while True:
-            if node.round==20 or node.is_terminal:
+            if node.is_terminal:
                 reward=node.reward()
                 return reward
             node=node.find_random_child()
